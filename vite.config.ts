@@ -20,4 +20,12 @@ export default defineConfig({
       ],
     },
   },
+  define: {
+    global: {},
+  },
+  build: {
+    commonjsOptions: {
+      transformMixedEsModules: true,
+    },
+  },
 });
