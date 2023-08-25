@@ -4,7 +4,6 @@ import { Web3ReactHooks } from "@web3-react/core";
 import { Network } from "@web3-react/network";
 import { WalletConnect } from "@web3-react/walletconnect";
 import { WalletConnect as WalletConnectV2 } from "@web3-react/walletconnect-v2";
-import { ethers } from "ethers";
 import { Web3Provider } from "@ethersproject/providers";
 
 import { Connector } from "../types/Connector";
@@ -103,7 +102,7 @@ export default function Card({
         setMessage("TX HASH: " + transactionResponse.hash);
       })
       .catch((error: Error) => {
-        setMessage("Error: " + error.reason);
+        setMessage("Error: " + error.message);
       });
   };
 
