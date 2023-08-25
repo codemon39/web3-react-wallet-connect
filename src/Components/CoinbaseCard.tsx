@@ -1,5 +1,7 @@
-import { CoinbaseWallet } from "@web3-react/coinbase-wallet";
+import { useEffect } from "react";
 import { initializeConnector } from "@web3-react/core";
+import { CoinbaseWallet } from "@web3-react/coinbase-wallet";
+import { Web3Provider } from "@ethersproject/providers";
 import Card from "./Card";
 import { URLS } from "../chains";
 
@@ -25,29 +27,41 @@ const {
 
 interface Props {
   setError: (error: Error | undefined) => void;
+  isConnected: boolean;
+  setIsConnected: (isConnected: boolean) => void;
 }
 
-export default function CoinbaseCard({ setError }: Props) {
+export default function CoinbaseCard({
+  setError,
+  isConnected,
+  setIsConnected,
+}: Props) {
   const chainId = useChainId();
   const accounts = useAccounts();
   const isActivating = useIsActivating();
   const isActive = useIsActive();
-  const provider = useProvider();
+  const provider = useProvider() as Web3Provider;
   const ENSNames = useENSNames(provider);
 
-  console.log({ coinbase: isActive });
+  useEffect(() => {
+    setIsConnected(isActive);
+  }, [isActive]);
 
   return (
-    <Card
-      connector={connector}
-      activeChainId={chainId}
-      isActivating={isActivating}
-      isActive={isActive}
-      ENSNames={ENSNames}
-      provider={provider}
-      accounts={accounts}
-      setError={setError}
-      imgURL={`../cbw.png`}
-    />
+    <>
+      {isConnected == isActive && (
+        <Card
+          connector={connector}
+          activeChainId={chainId}
+          isActivating={isActivating}
+          isActive={isActive}
+          ENSNames={ENSNames}
+          provider={provider}
+          accounts={accounts}
+          setError={setError}
+          imgURL={`../cbw.png`}
+        />
+      )}
+    </>
   );
 }

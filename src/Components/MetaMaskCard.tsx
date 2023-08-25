@@ -1,7 +1,8 @@
+import { useEffect } from "react";
 import { initializeConnector } from "@web3-react/core";
 import { MetaMask } from "@web3-react/metamask";
+import { Web3Provider } from "@ethersproject/providers";
 import Card from "./Card";
-import { useEffect } from "react";
 
 const [connector, hooks] = initializeConnector<MetaMask>(
   (actions) => new MetaMask({ actions })
@@ -18,12 +19,18 @@ const {
 
 interface Props {
   setError: (error: Error | undefined) => void;
+  isConnected: boolean;
+  setIsConnected: (isConnected: boolean) => void;
 }
 
-export default function MetaMaskCard({ setError }: Props) {
+export default function MetaMaskCard({
+  setError,
+  isConnected,
+  setIsConnected,
+}: Props) {
   useEffect(() => {
     void connector.connectEagerly().catch(() => {
-      console.debug("Failed to connect eagerly to metamask");
+      console.debug("Failed to connect to metamask");
     });
   }, []);
 
@@ -31,22 +38,28 @@ export default function MetaMaskCard({ setError }: Props) {
   const accounts = useAccounts();
   const isActivating = useIsActivating();
   const isActive = useIsActive();
-  const provider = useProvider();
+  const provider = useProvider() as Web3Provider;
   const ENSNames = useENSNames(provider);
 
-  console.log({ metamask: isActive });
+  useEffect(() => {
+    setIsConnected(isActive);
+  }, [isActive]);
 
   return (
-    <Card
-      connector={connector}
-      activeChainId={chainId}
-      isActivating={isActivating}
-      isActive={isActive}
-      ENSNames={ENSNames}
-      provider={provider}
-      accounts={accounts}
-      setError={setError}
-      imgURL={`../mm.png`}
-    />
+    <>
+      {isConnected == isActive && (
+        <Card
+          connector={connector}
+          activeChainId={chainId}
+          isActivating={isActivating}
+          isActive={isActive}
+          ENSNames={ENSNames}
+          provider={provider}
+          accounts={accounts}
+          setError={setError}
+          imgURL={`../mm.png`}
+        />
+      )}
+    </>
   );
 }
